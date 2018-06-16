@@ -1,0 +1,18 @@
+{
+  "name": "gpu-bitcoin-miner",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "webpack": "^4.12.0"
+  },
+  "dependencies": {
+    "gpu.js": "^1.4.3",
+    "js-sha256": "^0.9.0"
+  }
+}
