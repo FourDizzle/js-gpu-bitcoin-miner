@@ -5,12 +5,6 @@ const util = require('./util')
 const hexutil = require('./hexutil')
 const sha256 = require('js-sha256').sha256
 
-const HEADER_PADDING = [
-  0x0000, 0x0080, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
-  0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
-  0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x8002, 0x0000,
-]
-
 const mine = function(job) {
   console.log('job', job);
   let blockHeader = generateBlockHeader(job, '33087548');
@@ -76,18 +70,17 @@ const generateBlockHeader = function(job, nonce) {
   const blockHeader = {
     version: hexutil.convertToLittleEndian(job.version),
     previousBlockHash: hexutil.convertToLittleEndian(job.previousBlockHash),
-    //merkleRoot: hexutil.convertToLittleEndian(job.merkleRoot),
     merkleRoot: hexutil.reverseAllBytes(job.merkleRoot),
     solutionTime: hexutil.convertToLittleEndian(job.timestamp),
     bits: hexutil.convertToLittleEndian(job.bits),
     solutionNonce: hexutil.convertToLittleEndian(nonce),
-    // headerPadding: HEADER_PADDING,
   };
 
   console.log('bHead', blockHeader);
 
-  blockHeader.hex = '' + blockHeader.version + blockHeader.previousBlockHash + blockHeader.merkleRoot + blockHeader.solutionTime + blockHeader.bits + blockHeader.solutionNonce
-  // blockHeader.hex += hexutil.convertToLittleEndian(generateHeaderPadding(blockHeader))
+  blockHeader.hex = '' + blockHeader.version + blockHeader.previousBlockHash
+    + blockHeader.merkleRoot + blockHeader.solutionTime + blockHeader.bits
+    + blockHeader.solutionNonce + '000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000'
   return blockHeader;
 }
 

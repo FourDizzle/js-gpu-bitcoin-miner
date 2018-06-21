@@ -12,7 +12,6 @@
     "webpack": "^4.12.0"
   },
   "dependencies": {
-    "gpu.js": "^1.4.3",
     "js-sha256": "^0.9.0"
   }
 }
