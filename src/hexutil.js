@@ -46,9 +46,19 @@ const reverseAllBytes = function(hex) {
   return rev;
 }
 
+function toUint32Array(hex) {
+  var array = new Uint32Array(hex.length / 8);
+  for (let i = 0; i < hex.length; i += 8) {
+    array[i/8] = parseInt(hex.substring(i, i+8), 16)
+  }
+
+  return array
+}
+
 module.exports = {
   convertToLittleEndian: convertToLittleEndian,
   convertToByteArray: convertToByteArray,
   byteToHex: byteToHex,
   reverseAllBytes: reverseAllBytes,
+  toUint32Array: toUint32Array,
 }

@@ -1,5 +1,2 @@
-const miner = require('./miner')
-const jobInt = require('./job')
-
-  let job  = jobInt.getJob()
-  let result = miner.mine(job)
+const detectWebGLVersion = require('./detect-webgl')
+const services = require('./services')

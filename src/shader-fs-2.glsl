@@ -5,10 +5,13 @@
 */
 
 uniform uint data[32];
+uniform uint midstate[8];
 uniform uint target[8];
 uniform uint nonce_base;
 uniform uint H[8];
 uniform uint K[64];
+
+uniform uint N;
 
 bool is_pass(uint[] hash) {
   bool pass = false;
@@ -91,18 +94,18 @@ uint[8] sha256(uint[] msg, uint[] startH) {
 void main() {
   uint nonce;
   uint w[64];
-  uint udata[32];
+  uint udata[16];
   uint hash[8];
 
   uint x_off = gl_FragCoord.x;
 
-  for (int i=0; i<32; i++) {
-      udata[i] = data[i];
+  for (int i=0; i<16; i++) {
+      udata[i] = data[i+16];
   }
 
   udata[19] = nonce_base + x_off;
 
-  hash = sha256(udata, H);
+  hash = sha256(udata, midstate);
 
   uint temp[16] = uint[](0,0,0,0,0,0,0,0,2147483648,0,0,0,0,0,0,256);
   for (int i = 0; i < 8; i++) {
@@ -112,7 +115,7 @@ void main() {
   hash = sha256(temp, H);
 
   if (is_pass(hash)) {
-    gl_FragColor = vec4(1.0, .0, .0, 1.0);
+    gl_FragColor = vec4(.0, 1.0, .0, 1.0);
   } else {
     gl_FragColor = vec4(1.0, .0, .0, 1.0);
   }
