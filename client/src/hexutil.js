@@ -1,4 +1,4 @@
-const convertToLittleEndian = function(hex) {
+export const convertToLittleEndian = function(hex) {
   let hexcopy = '';
   if (hex.substring(0, 2) === '0x') {
     hexcopy = hex.substring(2);
@@ -24,7 +24,7 @@ const convertToLittleEndian = function(hex) {
   return littleEndianHex;
 }
 
-const convertToByteArray = function(hex) {
+export const convertToByteArray = function(hex) {
   let arr = []
   for (let i = 0; i < hex.length; i += 2) {
     arr.push(parseInt(hex.substring(i, i+2), 16))
@@ -32,13 +32,13 @@ const convertToByteArray = function(hex) {
   return arr
 }
 
-const byteToHex = function(byte) {
+export const byteToHex = function(byte) {
   let hexDigits = '0123456789abcdef'
   let b = byte & 0xff
   return hexDigits.charAt(b / 16) + hexDigits.charAt(b % 16);
 }
 
-const reverseAllBytes = function(hex) {
+export const reverseAllBytes = function(hex) {
   rev = ''
   for (let i = 0; i < hex.length; i += 2) {
     rev += hex.substring(hex.length - 2 - i, hex.length - i)
@@ -46,19 +46,11 @@ const reverseAllBytes = function(hex) {
   return rev;
 }
 
-function toUint32Array(hex) {
+export const toUint32Array = function(hex) {
   var array = new Uint32Array(hex.length / 8);
   for (let i = 0; i < hex.length; i += 8) {
     array[i/8] = parseInt(hex.substring(i, i+8), 16)
   }
 
-  return array
-}
-
-module.exports = {
-  convertToLittleEndian: convertToLittleEndian,
-  convertToByteArray: convertToByteArray,
-  byteToHex: byteToHex,
-  reverseAllBytes: reverseAllBytes,
-  toUint32Array: toUint32Array,
+  return array;
 }

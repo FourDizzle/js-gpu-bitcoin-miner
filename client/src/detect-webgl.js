@@ -1,4 +1,4 @@
-function detectWebGlVersion() {
+export default function() {
   let gl
   let webgl = {}
   let canvas
@@ -41,5 +41,3 @@ function detectWebGlVersion() {
 
   return webgl
 }
-
-module.exports = detectWebGLVersion

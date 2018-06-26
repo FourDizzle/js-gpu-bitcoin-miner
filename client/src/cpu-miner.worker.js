@@ -1,6 +1,6 @@
-const hexutil = require('./hexutil')
-const sha256 = require('js-sha256').sha256
-const services = require('./services')
+import { convertToByteArray } from './hexutil'
+import { sha256 } from 'js-sha256'
+import services from './services'
 
 let work
 let headerIntArr
@@ -66,10 +66,11 @@ function mine() {
 function onmessage(e) {
   switch(e.data.action) {
     case 'work':
+      let newWork = e.data.work
       if (newWork.id !== work.id) {
         work = newWork
-        headerIntArr = hexutil.convertToByteArray(work.data.substring(0, 152))
-        target = hexutil.convertToByteArray(work.target)
+        headerIntArr = convertToByteArray(work.data.substring(0, 152))
+        target = convertToByteArray(work.target)
         nonce = work.nonceStart
       }
       mine()

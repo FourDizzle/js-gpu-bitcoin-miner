@@ -1,7 +1,5 @@
-const vShaderQuellcode = require('./shader-vs.glsl')
-const fShaderQuellcode = require('./shader-fs.glsl')
-const vShaderQuellcodeV2 = require('./shader-vs-2.glsl')
-const fShaderQuellcodeV2 = require('./shader-fs-2.glsl')
+const vShaderQuellcode = require('./shaders/shader-vs.glsl')
+const fShaderQuellcode = require('./shaders/shader-fs.glsl')
 
 const H = [
   0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
