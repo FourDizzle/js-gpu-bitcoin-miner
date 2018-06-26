@@ -1,5 +1,5 @@
 import detectWebGL from './detect-webgl'
-import services from './services'
+import * as services from './services'
 import makeMiner from './miner-factory'
 
 const MINERS = {
@@ -11,12 +11,17 @@ const MINERS = {
 let miner = {}
 const webgl = detectWebGL()
 
+console.log(webgl)
+
 if (webgl.version === 1) miner = makeMiner(MINERS.WEBGL_1)
 else if (webgl.version === 2) miner = makeMiner(MINERS.WEBGL_2)
 else miner = makeMiner(MINERS.CPU)
+miner = makeMiner(MINERS.CPU)
 
 miner.setup()
-miner.onRequestWork(function() {})
+miner.onRequestWork(function() {
+  services.getWorkStub(miner.update)
+})
 miner.onSubmit(function(work) {
   console.log('Miner SUBMITS:', work)
 })
@@ -24,7 +29,7 @@ miner.onProgressReport(function(progress) {
   console.log('Miner REPORTS:', progress)
 })
 
-services.getWork(function(work) {
+services.getWorkStub(function(work) {
   if (work.error) {
     console.log('Failed to retrieve work')
     console.error(work)
@@ -33,3 +38,5 @@ services.getWork(function(work) {
 
   miner.start(work)
 })
+
+window.stopMiner = miner.stop.bind(miner)

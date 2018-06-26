@@ -1,61 +1,31 @@
 import Worker from './cpu-miner.worker.js'
-
-let work
-let worker
-let submitCb
-let progressReportCb
-let requestWorkCb
-
-const submit = function(work, nonce) {
-  if (typeof submitCb === 'function') submitCb({ work: work, nonce: nonce})
-}
-const reportProgress = function(work, nonce, numhashes, duration) {
-  if (typeof progressReportCb === 'function')
-    progressReportCb({
-      work: work,
-      nonce: nonce,
-      numhashes: numhashes,
-      duration: duration,
-    })
-}
-const requestWork = function() {
-  if (typeof requestWorkCb === 'function')
-    requestWorkCb(update)
-}
+import miner from './miner.js'
 
 const setup = function(options) {
-  worker = new Worker();
-  worker.onmessage = (e.data) => {
+  this.process = new Worker();
+  this.process.interuptMessage = this.process.postMessage
+  this.process.onmessage = (e) => {
     const message = e.data
-    if (message.action === 'submit') {
-      submit(message.work, message.nonce)
-    } else if (message.action === 'report') {
-      reportProgress(message.work, message.nonce, message.numhashes, message.duration)
-    } else if (message.action === 'requestWork') {
-      requestWork()
+    if (message.action === 'submit' && this.submitCb === 'function') {
+        this.submitCb({ work: work, nonce: nonce})
+    } else if (message.action === 'report' && typeof this.requestWorkCb === 'function') {
+      this.progressReportCb({
+        work: message.work,
+        nonce: message.nonce,
+        hashPerSec: message.numhashes,
+        duration: message.duration,
+        numhashes: message.numhashes,
+        timestamp: message.timestamp,
+        lastHash: message.lastHash,
+      })
+    } else if (message.action === 'requestWork' && typeof this.requestWorkCb === 'function') {
+      this.requestWorkCb()
     }
   }
 }
 
-const start = function(work) {
-  worker.postMessage({
-    action: 'work',
-    work: work,
-  })
-}
-
-const update = function(work) {}
-const stop = function() {}
-const close = function() {
-  worker.terminate()
-}
-
-const onRequestWork = function(callback) {
-  requestWorkCb = callback
-}
-const onSubmit = function(callback) {
-  submitCb = callback
-}
-const onProgressReport = function(callback) {
-  progressReportCb = callback
+export default function(name) {
+  let cpuMiner = { setup }
+  Object.setPrototypeOf(cpuMiner, miner)
+  return cpuMiner
 }

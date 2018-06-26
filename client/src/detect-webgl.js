@@ -4,8 +4,9 @@ export default function() {
   let canvas
 
   try {
-    canvas = createElement('canvas')
+    canvas = document.createElement('canvas')
   } catch (err) {
+    console.error(err)
     return {
       available: false,
       version: false,
@@ -34,7 +35,10 @@ export default function() {
   if (!gl) {
     webgl.version = false
     webgl.available = false
+    return webgl
   } else {
+    let webgl2canvas = document.createElement('canvas')
+    gl = webgl2canvas.getContext('webgl2')
     webgl.version = (typeof WebGL2RenderingContext !== 'undefined'
       && gl instanceof WebGL2RenderingContext) ? 2 : webgl.version
   }

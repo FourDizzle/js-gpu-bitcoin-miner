@@ -23,7 +23,7 @@ export const getWork = function(callback) {
   xhr.send()
 }
 
-const getWorkStub = function(callback) {
+export const getWorkStub = function(callback) {
   let work = {
     id: '58af8d8c',
     target: '00000000ffff0000000000000000000000000000000000000000000000000000',
