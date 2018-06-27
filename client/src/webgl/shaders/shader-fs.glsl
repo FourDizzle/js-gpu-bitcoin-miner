@@ -61,6 +61,19 @@ vec2 safe_add (vec2 a, vec2 b)
       }
       return ret;
 }
+
+bool is_bigger (vec2 a, vec2 b) {
+	if (a.x > b.x) {
+		return true;
+	}
+
+	if (a.y > b.y) {
+		return true;
+	}
+
+	return false;
+}
+
 /* Note: shift should be a power of two, e.g. to shift 3 steps, use 2^3. */
 vec2 sftr (vec2 a, float shift)
 {
@@ -344,13 +357,13 @@ void main ()
             a = safe_add(_t1, _t2);
 	}
 
-        // tmp[0] = safe_add(a, tmp[0]);
-        // tmp[1] = safe_add(b, tmp[1]);
-        // tmp[2] = safe_add(c, tmp[2]);
-        // tmp[3] = safe_add(d, tmp[3]);
-        // tmp[4] = safe_add(e, tmp[4]);
-        // tmp[5] = safe_add(f, tmp[5]);
-        // tmp[6] = safe_add(g, tmp[6]);
+        tmp[0] = safe_add(a, tmp[0]);
+        tmp[1] = safe_add(b, tmp[1]);
+        tmp[2] = safe_add(c, tmp[2]);
+        tmp[3] = safe_add(d, tmp[3]);
+        tmp[4] = safe_add(e, tmp[4]);
+        tmp[5] = safe_add(f, tmp[5]);
+        tmp[6] = safe_add(g, tmp[6]);
         tmp[7] = safe_add(h, tmp[7]);
 
         if (nonces_per_pixel != 1 && tmp[7].x == 0. && tmp[7].y == 0.) {
@@ -365,9 +378,28 @@ void main ()
 
 	/* TODO: Compare with target. */
     }
-    if (nonces_per_pixel == 1) {
-        gl_FragColor = toRGBA( tmp[7]);
-    } else {
-        gl_FragColor = toRGBA(ret);
-    }
+
+		bool is_submittable = false;
+		for (int i = 0; i < 8; i++) {
+			if (is_bigger(tmp[8 - i -1], target[i])) {
+				is_submittable = false;
+				break;
+			}
+
+			if (is_bigger(target[i], tmp[8 - i -1])) {
+				is_submittable = true;
+			}
+		}
+
+		if (is_submittable) {
+			gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
+		} else {
+			gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+		}
+
+    // if (nonces_per_pixel == 1) {
+    //     gl_FragColor = toRGBA( tmp[7]);
+    // } else {
+    //     gl_FragColor = toRGBA(ret);
+    // }
 }

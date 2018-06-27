@@ -54,3 +54,7 @@ export const toUint32Array = function(hex) {
 
   return array;
 }
+
+export const toUint16Array = function(w) {
+  return [(w & 0xffff0000) >> 16, (w & 0x0000ffff) ]
+}
