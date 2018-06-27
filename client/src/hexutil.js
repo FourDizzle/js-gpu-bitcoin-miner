@@ -58,3 +58,18 @@ export const toUint32Array = function(hex) {
 export const toUint16Array = function(w) {
   return [(w & 0xffff0000) >> 16, (w & 0x0000ffff) ]
 }
+
+export const hexToUint16Array = function(hex) {
+  var arr = [];
+  for (var i = 0, l = hex.length; i < l; i += 4) {
+    arr.push((parseInt(hex.substring(i, i+4), 16)));
+  }
+  return arr;
+}
+
+export const nonceToUint16Array = function(nonce) {
+  var arr = new Uint16Array(2);
+  arr[0] = ((nonce & 0xFFFF0000) >>> 16)
+  arr[1] = ((nonce & 0x0000FFFF))
+  return arr;
+}

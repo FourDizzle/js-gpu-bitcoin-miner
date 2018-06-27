@@ -35,7 +35,7 @@ export function compileShader(gl, shaderSource, shaderType) {
  * @param {!WebGLShader} fragmentShader A fragment shader.
  * @return {!WebGLProgram} A program.
  */
-function createProgram(gl, vertexShader, fragmentShader) {
+export function createProgram(gl, vertexShader, fragmentShader) {
   // create a program.
   var program = gl.createProgram();
 

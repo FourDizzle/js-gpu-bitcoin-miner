@@ -9,9 +9,13 @@ const start = function(work) {
     action: 'work',
     work: work,
   })
+    console.log(work)
 }
 
-const update = function(work) {}
+const update = function(work) {
+  start(work)
+}
+
 const stop = function() {
   console.log('stopping', this.name)
   this.process.interuptMessage({

@@ -9,5 +9,7 @@ export default function(minerType) {
       return makeCpuMiner(minerName)
     case 'webgl':
       return makeWebGlMiner(minerName)
+    case 'webgl2':
+      return makeWebGlMiner(minerName)
   }
 }

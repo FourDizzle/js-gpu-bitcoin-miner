@@ -1,4 +1,5 @@
 import { compileShader, createProgram } from './boilerplate'
+import { nonceToUint16Array, hexToUint16Array } from '../hexutil'
 
 var h =  [0x6a09, 0xe667, 0xbb67, 0xae85, 0x3c6e, 0xf372, 0xa54f, 0xf53a,
           0x510e, 0x527f, 0x9b05, 0x688c, 0x1f83, 0xd9ab, 0x5be0, 0xcd19];
@@ -23,7 +24,7 @@ var k =  [0x428a, 0x2f98, 0x7137, 0x4491, 0xb5c0, 0xfbcf, 0xe9b5, 0xdba5,
 let debug = true
 let batchSize = 500000
 
-function getWebglContext(canvas, shaders) {
+function getWebglContext(canvas) {
   let gl = null
   const names = ['webgl', 'experimental-webgl', 'moz-webgl', 'webkit-3d'];
   for (let i = 0; i < names.length; i++) {
@@ -34,6 +35,7 @@ function getWebglContext(canvas, shaders) {
       console.error(e);
     }
   }
+  console.log(gl)
   return gl
 }
 
@@ -68,7 +70,7 @@ function getShaderVariables(gl, program) {
   };
 }
 
-export default function setupWebgl(threads) {
+export default function setupWebgl(threads, shaders) {
   let canvas = document.createElement('canvas')
   if (debug || true) document.body.appendChild(canvas)
   canvas.height = 1
@@ -77,6 +79,7 @@ export default function setupWebgl(threads) {
   this.process.threads = threads
 
   let gl = getWebglContext(canvas)
+  console.log(gl)
   if (gl === null)
     return false;
 
@@ -90,10 +93,16 @@ export default function setupWebgl(threads) {
   let shaderVariables = getShaderVariables(gl, program)
 
   gl.addWork = function(work) {
-    gl.uniform2fv(dataLoc, work.data)
-    gl.uniform2fv(hash1Loc, work.hash1)
-    gl.uniform2fv(midstateLoc, work.midstate)
-    gl.uniform2fv(targetLoc, work.target)
+    console.log(work)
+    gl.uniform2fv(shaderVariables.dataLoc, hexToUint16Array(work.data))
+    gl.uniform2fv(shaderVariables.hash1Loc, hexToUint16Array(work.hash1))
+    gl.uniform2fv(shaderVariables.midstateLoc, hexToUint16Array(work.midstate))
+    gl.uniform2fv(shaderVariables.targetLoc, hexToUint16Array(work.target))
+  }
+
+  gl.updateNonce = function(nonce) {
+    this.nonce = nonce
+    gl.uniform2fv(shaderVariables.nonceLoc, nonceToUint16Array(nonce))
   }
 
   return gl;
