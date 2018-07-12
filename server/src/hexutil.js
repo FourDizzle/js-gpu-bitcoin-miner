@@ -64,11 +64,11 @@ function numToNByteHex(num, numBytes) {
   let mask = ''
   for (let i = 0; i < numBytes; i++) {
     zeros += '00'
-    mask = 'ff'
+    mask += 'ff'
   }
-  let bitmask = parseInt(bitmask, 16)
+  let bitmask = parseInt(mask, 16)
   let out = (num & bitmask).toString(16)
-  out = zeros.substring(0, numBytes * 2 - out.length) + out
+  out = zeros.substring(0, Math.max(0, numBytes * 2 - out.length)) + out
   return out
 }
 
@@ -78,4 +78,5 @@ module.exports = {
   byteToHex: byteToHex,
   reverseAllBytes: reverseAllBytes,
   numTo32bitshex: numTo32bitshex,
+  numToNByteHex: numToNByteHex,
 }

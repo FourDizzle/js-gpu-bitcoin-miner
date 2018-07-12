@@ -69,7 +69,7 @@ function getShaderVariables(gl, program) {
   };
 }
 
-export default function setupWebgl(threads, shaders, options) {
+function setupWebgl(threads, shaders, options) {
   // let debug = options.debug || false
   debug = true
   let canvas = document.createElement('canvas')
@@ -94,18 +94,6 @@ export default function setupWebgl(threads, shaders, options) {
 
   let shaderParams = getShaderVariables(gl, program)
 
-  gl.addWork = function(work) {
-    console.log(work)
-    gl.uniform2fv(shaderParams.dataLoc, hexToUint16Array(work.data))
-    gl.uniform2fv(shaderParams.hash1Loc, hexToUint16Array(work.hash1))
-    gl.uniform2fv(shaderParams.midstateLoc, hexToUint16Array(work.midstate))
-    gl.uniform2fv(shaderParams.targetLoc, hexToUint16Array(work.target))
-  }
-
-  gl.updateNonce = function(nonce) {
-    this.nonce = nonce
-    gl.uniform2fv(shaderParams.nonceLoc, nonceToUint16Array(nonce))
-  }
-
-  return { gl, shaderParams };
+  shaderParams.gl = gl
+  return shaderParams;
 }

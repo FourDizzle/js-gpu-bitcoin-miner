@@ -7,7 +7,7 @@ const setup = function(options) {
   this.process.onmessage = (e) => {
     const message = e.data
     if (message.action === 'submit' && this.submitCb === 'function') {
-        this.submitCb({ work: work, nonce: nonce})
+      this.submitCb({ work: work, nonce: nonce})
     } else if (message.action === 'report' && typeof this.requestWorkCb === 'function') {
       this.progressReportCb({
         work: message.work,

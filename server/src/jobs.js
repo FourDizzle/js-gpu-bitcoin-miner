@@ -1,21 +1,45 @@
 let jobList = []
 
 function newJob(job) {
-  let job = {
-    id: job.params[0],
-    prevhash: job.params[1],
-    coinb1: job.params[2],
-    coinb2: job.params[3],
-    merkleBranch: job.params[4],
-    version: job.params[5],
-    nbits: job.params[6],
-    ntime: job.params[7],
-    cleanJobs: job.params[8]
-  }
+  return {
+    id: job[0],
+    prevhash: job[1],
+    coinb1: job[2],
+    coinb2: job[3],
+    merkleBranch: job[4],
+    version: job[5],
+    nbits: job[6],
+    ntime: job[7],
+    cleanJobs: job[8]
+  };
+}
+
+function isJob(obj) {
+  return (
+    obj.id
+    && obj.prevhash
+    && obj.coinb1
+    && obj.coinb2
+    && obj.merkleBranch
+    && obj.version
+    && obj.nbits
+    && obj.ntime
+  );
 }
 
 function addJob(job) {
-  jobList.push(job)
+  let parsedJob
+  if (Array.isArray(job)) {
+    parsedJob = newJob(job)
+  } else if (isJob(job)) {
+    parsedJob = job
+  }
+
+  if (parsedJob.cleanJobs) {
+    cleanJobs()
+  }
+
+  jobList.push(parsedJob)
 }
 
 function getJobs() {

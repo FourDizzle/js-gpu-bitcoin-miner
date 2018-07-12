@@ -1,3 +1,5 @@
+const hexutil = require('./hexutil')
+
 const H = [
   0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
   0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
@@ -109,7 +111,7 @@ function prepare(hex) {
     padding = padHex(hex.length)
   }
 
-  console.log('padded:', hex + padding)
+  //console.log('padded:', hex + padding)
 
   return toUint32Array(hex + padding)
 }
@@ -124,7 +126,7 @@ function calcMidstate(hex) {
 
 function sha256(msg) {
   let msgArr = prepare(msg)
-  console.log('arr', msgArr)
+  //console.log('arr', msgArr)
   let chunks = chunkMessage(msgArr)
 
   return chunks
