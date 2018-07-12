@@ -1,7 +1,6 @@
 const express = require('express')
 const router = express.Router()
 const createWork = require('./create-work')
-const jobs = require('./jobs')
 
 module.exports = function(stratumSession, jobs) {
   router.get('/work', (req, res) => {

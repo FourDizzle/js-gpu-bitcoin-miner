@@ -39,7 +39,7 @@ function handleMsg(msg) {
       } else {
         return cb;
       }
-    })
+    }).filter(cb => !!cb)
   }
 
   if (msg.method) {
@@ -215,9 +215,9 @@ module.exports = (host, port, options) => {
 
   client.eventEmitter.on('socket.sendingMessage', (msg) => {
     if (msg.method === 'mining.subscribe') {
-      let fn: (error, result) => {
-          client.extranonce1 = result[1]
-          client.extranonce2Size = result[2]
+      let fn = (error, result) => {
+        client.extranonce1 = result[1]
+        client.extranonce2Size = result[2]
       }
       addRespQueue.call(client, msg.id, fn)
     }

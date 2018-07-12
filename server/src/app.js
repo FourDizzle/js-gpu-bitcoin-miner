@@ -1,50 +1,26 @@
-let createStratumClient = require('./stratum-client')
-let jobs = require('./jobs');
-let createWork = require('./create-work');
+const express = require('express')
+const app = express()
+const bodyParser = require('body-parser')
+const server = require('http').createServer(app)
+const io = require('socket.io')(server)
+const websocket = require('./websocket')
 
-var express = require('express')
-var app = express()
-var bodyParser = require('body-parser')
-var server = require('http').createServer(app)
-var io = require('socket.io')(server)
-var websocket = require('./websocket')
+const createStratumClient = require('./stratum-client')
+const jobs = require('./jobs');
+const createWork = require('./create-work');
 
-var port = process.env.PORT || 5000;
+let port = process.env.PORT || 5000;
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
-var stratumSession = createStratumClient('stratum.slushpool.com', 3333)
+let stratumSession = createStratumClient('stratum.slushpool.com', 3333)
 
-var routes = require('./routes')(stratumSession)
-//
-// app.use(routes)
+let routes = require('./routes')(stratumSession, jobs)
+
+app.use(routes)
 // websocket.setup(io)
 
-app.get('/work', (req, res) => {
-    console.log("client requested work!");
-
-    let work = createWork(jobs.getJobs()[0], stratumSession)
-
-    res.json({
-        result: work,
-    });
-});
-
-app.listen(port)
-
-// stratumSession.onConnect(() => {
-//   stratumSession.subscribe(function() {console.log(arguments)})
-//   console.log(stratumSession.respQueue[0])
-//   // stratumSession.authorize('FourDizzle.worker1', 'password',
-//   //   (error, result) => {
-//   //     if (!error) {
-//   //       console.log(result)
-//   //     } else {
-//   //       console.log('error:', error)
-//   //     }
-//   //   }
-//   // )
-// })
+server.listen(port)
 
 stratumSession.onNotify(function(id, prevhash) {
   args = [].slice.call(arguments)
@@ -55,8 +31,7 @@ stratumSession.onNotify(function(id, prevhash) {
 })
 
 stratumSession.connect(() => {
-  stratumSession.subscribe('FourDizzle', function() {console.log(arguments)})
-  console.log(stratumSession.respQueue[0])
+  stratumSession.subscribe('FourDizzle')
   // stratumSession.authorize('FourDizzle.worker1', 'password',
   //   (error, result) => {
   //     if (!error) {
