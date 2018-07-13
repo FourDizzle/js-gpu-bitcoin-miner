@@ -1,6 +1,6 @@
 // import detectWebGL from './detect-webgl'
 import * as services from './services'
-import makeMiner from './new-miner-factory'
+import makeMiner from './miner-factory'
 
 import websocket from './websocket'
 
