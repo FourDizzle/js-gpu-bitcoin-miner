@@ -36,18 +36,6 @@ vec4 toRGBA(vec2 arg) {
       return vec4(R/255., G/255., B/255., A/255.);
 }
 
-vec4 reverseRGBA(vec2 arg) {
-	float V = float(arg.x);
-	float A = floor(V / pow(2.0, 8.0));
-	V -= A * pow(2.0, 8.0);
-	float B = V;
-	V = float(arg.y);
-	float G = floor(V / pow(2.0, 8.0));
-	V -= G * pow(2.0, 8.0);
-	float R = V;
-	return vec4(R/255., G/255., B/255., A/255.);
-}
-
 vec4 toRGBA(float V) {
       float R = V / pow(2.0, 24.0);
       V -= floor(R) *  pow(2.0, 24.0);
@@ -73,19 +61,6 @@ vec2 safe_add (vec2 a, vec2 b)
       }
       return ret;
 }
-
-bool is_bigger (vec2 a, vec2 b) {
-	if (a.x > b.x) {
-		return true;
-	}
-
-	if (a.y > b.y) {
-		return true;
-	}
-
-	return false;
-}
-
 /* Note: shift should be a power of two, e.g. to shift 3 steps, use 2^3. */
 vec2 sftr (vec2 a, float shift)
 {
@@ -263,28 +238,28 @@ void main ()
         udata[3] = nonce;
 
         // Reset
-        for (int i=0; i<8; i++) {
-            tmp[i] = H[i];
-        }
-        // TODO: check if needed
-        /*for (int i = 0; i < 64; i++) {
-            w[i] = vec2(0., 0.);
-        }*/
+            for (int i=0; i<8; i++) {
+                tmp[i] = H[i];
+            }
+            // TODO: check if needed
+            /*for (int i = 0; i < 64; i++) {
+                w[i] = vec2(0., 0.);
+            }*/
 
 
         // update(midstate, udata)
-        // set state(midstate)
-        for (int i=0; i<8; i++) {
-            tmp[i] = midstate[i];
-        }
-        // extend work (w, udata)
-        for (int i=0; i<16; i++) {
-            w[i] = udata[i];
-        }
+            // set state(midstate)
+            for (int i=0; i<8; i++) {
+                tmp[i] = midstate[i];
+            }
+            // extend work (w, udata)
+            for (int i=0; i<16; i++) {
+                w[i] = udata[i];
+            }
 
-        for (int i = 16; i < 64; ++i) {
-					w[i] = blend(w[i-16], w[i-15], w[i-7], w[i-2]);
-        }
+            for (int i = 16; i < 64; ++i) {
+		w[i] = blend(w[i-16], w[i-15], w[i-7], w[i-2]);
+            }
 
         // var s = this.state;
 
@@ -309,7 +284,7 @@ void main ()
             e = safe_add(d, _t1);
             d = c; c = b; b = a;
             a = safe_add(_t1, _t2);
-				}
+	}
 
         tmp[0] = safe_add(a, tmp[0]);
         tmp[1] = safe_add(b, tmp[1]);
@@ -328,22 +303,22 @@ void main ()
         }
 
         // Reset
-        for (int i=0; i<8; i++) {
-            tmp[i] = H[i];
-        }
-        // TODO: check if needed
-        /* for (int i = 0; i < 64; i++) {
-            w[i] = vec2(0., 0.);
-        } */
+            for (int i=0; i<8; i++) {
+                tmp[i] = H[i];
+            }
+            // TODO: check if needed
+            /* for (int i = 0; i < 64; i++) {
+                w[i] = vec2(0., 0.);
+            } */
 
-    // update(hash)
-        // extend work (w, hash)
-        for (int i=0; i<16; i++) {
-          w[i] = hash[i];
-        }
-        for (int i = 16; i < 64; ++i) {
-					w[i] = blend(w[i-16], w[i-15], w[i-7], w[i-2]);
-        }
+        // update(hash)
+            // extend work (w, hash)
+            for (int i=0; i<16; i++) {
+                w[i] = hash[i];
+            }
+            for (int i = 16; i < 64; ++i) {
+		w[i] = blend(w[i-16], w[i-15], w[i-7], w[i-2]);
+            }
 
         // var s = this.state;
         a = tmp[0];
@@ -356,74 +331,43 @@ void main ()
         h = tmp[7];
 
         for (int i = 0; i < 64; i++) {
-          _s0 = e0(a);
-          _maj = maj(a,b,c);
-          _t2 = safe_add(_s0, _maj);
-          _s1 = e1(e);
-          _ch = ch(e, f, g);
-          _t1 = safe_add(safe_add(safe_add(safe_add(h, _s1), _ch), K[i]), w[i]);
+            _s0 = e0(a);
+            _maj = maj(a,b,c);
+            _t2 = safe_add(_s0, _maj);
+            _s1 = e1(e);
+            _ch = ch(e, f, g);
+            _t1 = safe_add(safe_add(safe_add(safe_add(h, _s1), _ch), K[i]), w[i]);
 
-          h = g; g = f; f = e;
-          e = safe_add(d, _t1);
-          d = c; c = b; b = a;
-          a = safe_add(_t1, _t2);
-				}
+            h = g; g = f; f = e;
+            e = safe_add(d, _t1);
+            d = c; c = b; b = a;
+            a = safe_add(_t1, _t2);
+	}
 
-        tmp[0] = safe_add(a, tmp[0]);
-        tmp[1] = safe_add(b, tmp[1]);
-        tmp[2] = safe_add(c, tmp[2]);
-        tmp[3] = safe_add(d, tmp[3]);
-        tmp[4] = safe_add(e, tmp[4]);
-        tmp[5] = safe_add(f, tmp[5]);
-        tmp[6] = safe_add(g, tmp[6]);
+        // tmp[0] = safe_add(a, tmp[0]);
+        // tmp[1] = safe_add(b, tmp[1]);
+        // tmp[2] = safe_add(c, tmp[2]);
+        // tmp[3] = safe_add(d, tmp[3]);
+        // tmp[4] = safe_add(e, tmp[4]);
+        // tmp[5] = safe_add(f, tmp[5]);
+        // tmp[6] = safe_add(g, tmp[6]);
         tmp[7] = safe_add(h, tmp[7]);
-      }
 
-		bool is_submittable = true;
+        if (nonces_per_pixel != 1 && tmp[7].x == 0. && tmp[7].y == 0.) {
+            if (n <= 15) {
+                ret = safe_add(ret, vec2(0., pow(2.0, float(n))));
+            } else {
+                ret = safe_add(ret, vec2(pow(2.0, float(n - 16)), 0.));
+            }
+        // } else {
+            // gl_FragColor = vec4(1., 1., 1., 1.);
+        }
 
-		// vec2 hash_color;
-		// for (int i = 0; i < 8; i++) {
-		// 	if(target[i].x > 0.0 || target[i].y > 0.0) {
-		// 		hash_color = tmp[7-i];
-		// 		break;
-		// 	} else {
-		// 		if (tmp[7 - i].x == 0.0 && tmp[7 - i].y == 0.0) {
-		// 			is_submittable = true;
-		// 		} else {
-		// 			is_submittable = false;
-		// 		}
-		// 	}
-		// }
-
-		// if (is_submittable == true) {
-		// 	gl_FragColor = reverseRGBA(hash_color);
-		// } else {
-		// 	gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
-		// }
-
-		if (tmp[7].x == 0.0 && tmp[7].y == 0.0) {
-			gl_FragColor = reverseRGBA(tmp[6]);
-		} else {
-			gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
-		}
-		// gl_FragColor = reverseRGBA(hash_color);
-
-
-		// for (int i = 0; i < 8; i++) {
-		// 	if (is_bigger(tmp[8 - i -1], target[i])) {
-		// 		is_submittable = false;
-		// 		break;
-		// 	}
-		//
-		// 	if (is_bigger(target[i], tmp[8 - i -1])) {
-		// 		is_submittable = true;
-		// 		break;
-		// 	}
-		// }
-		//
-		// if (is_submittable) {
-		// 	gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
-		// } else {
-		// 	gl_FragColor = toRGBA( tmp[7]);
-		// }
+	/* TODO: Compare with target. */
+    }
+    if (nonces_per_pixel == 1) {
+        gl_FragColor = toRGBA( tmp[7]);
+    } else {
+        gl_FragColor = toRGBA(ret);
+    }
 }

@@ -37,7 +37,7 @@ export function compileShader(gl, shaderSource, shaderType) {
  */
 export function createProgram(gl, vertexShader, fragmentShader) {
   // create a program.
-  var program = gl.createProgram();
+  let program = gl.createProgram();
 
   // attach the shaders.
   gl.attachShader(program, vertexShader);

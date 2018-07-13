@@ -1,5 +1,5 @@
 import { compileShader, createProgram } from './boilerplate'
-import { nonceToUint16Array, hexToUint16Array } from '../hexutil'
+import { nonceToUint16Array, hexToUint16Array, reverseAllBytes } from '../hexutil'
 
 var h =  [0x6a09, 0xe667, 0xbb67, 0xae85, 0x3c6e, 0xf372, 0xa54f, 0xf53a,
           0x510e, 0x527f, 0x9b05, 0x688c, 0x1f83, 0xd9ab, 0x5be0, 0xcd19];
@@ -21,7 +21,7 @@ var k =  [0x428a, 0x2f98, 0x7137, 0x4491, 0xb5c0, 0xfbcf, 0xe9b5, 0xdba5,
           0x748f, 0x82ee, 0x78a5, 0x636f, 0x84c8, 0x7814, 0x8cc7, 0x0208,
           0x90be, 0xfffa, 0xa450, 0x6ceb, 0xbef9, 0xa3f7, 0xc671, 0x78f2];
 
-let debug = true
+let debug = false
 
 function getWebglContext(canvas) {
   let gl = null
@@ -71,16 +71,30 @@ function getShaderVariables(gl, program) {
 
 export default function setupWebgl(threads, shaders, options) {
   // let debug = options.debug || false
-  debug = true
+  options = options || {}
+  options.debug = options.debug || false
+  debug = options.debug
+
+  let glMiner = {
+    threads,
+    options,
+  }
+
   let canvas = document.createElement('canvas')
-  if (debug) document.body.appendChild(canvas)
   canvas.height = 1
   canvas.width = threads
+  canvas.style = 'width: ' + threads + 'px; height: 1px'
+  canvas.id = 'webgl-miner'
+
+  if (debug) document.body.appendChild(canvas)
+
+  glMiner.canvas = canvas
 
   let gl = getWebglContext(canvas)
-  console.log(gl)
   if (gl === null)
     return false;
+
+  glMiner.gl = gl
 
   let vShader = compileShader(gl, shaders.vShader, gl.VERTEX_SHADER)
   let fShader = compileShader(gl, shaders.fShader, gl.FRAGMENT_SHADER)
@@ -94,18 +108,29 @@ export default function setupWebgl(threads, shaders, options) {
 
   let shaderParams = getShaderVariables(gl, program)
 
-  gl.addWork = function(work) {
+  glMiner.buf = new Uint8Array(canvas.width * canvas.height * 4)
+
+  glMiner.addWork = function(work) {
     console.log(work)
+    console.log('target', hexToUint16Array(reverseAllBytes(work.target)))
     gl.uniform2fv(shaderParams.dataLoc, hexToUint16Array(work.data))
     gl.uniform2fv(shaderParams.hash1Loc, hexToUint16Array(work.hash1))
     gl.uniform2fv(shaderParams.midstateLoc, hexToUint16Array(work.midstate))
-    gl.uniform2fv(shaderParams.targetLoc, hexToUint16Array(work.target))
+    gl.uniform2fv(shaderParams.targetLoc, hexToUint16Array(reverseAllBytes(work.target)))
+    glMiner.updateNonce(work.nonceStart)
   }
 
-  gl.updateNonce = function(nonce) {
-    this.nonce = nonce
+  glMiner.updateNonce = function(nonce) {
+    glMiner.nonce = nonce
     gl.uniform2fv(shaderParams.nonceLoc, nonceToUint16Array(nonce))
   }
 
-  return { gl, shaderParams };
+  glMiner.mine = function() {
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+    gl.readPixels(0, 0, this.threads, 1, gl.RGBA, gl.UNSIGNED_BYTE, glMiner.buf)
+    this.updateNonce(this.nonce + this.threads)
+  }
+
+  console.log('webgl miner setup!')
+  return glMiner;
 }

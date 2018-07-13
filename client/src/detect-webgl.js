@@ -1,42 +1,25 @@
 export default function() {
-  let gl
+  let gl = null
   let webgl = {}
+  let names = ['webgl2', 'webgl']
   let canvas
 
   try {
     canvas = document.createElement('canvas')
   } catch (err) {
     console.error(err)
-    return {
-      version: 'cpu',
-    };
+    return 'cpu';
   }
 
-  try {
-    gl = canvas.getContext('webgl')
-    webgl.version = 'webgl'
-  } catch (err) {
-    gl = null
-  }
-
-  if (gl === null) {
+  for (let i = 0; i < names.length; i++) {
     try {
-      gl = canvas.getContext('experimental-webgl')
-      webgl.version = 'webgl'
+      gl = canvas.getContext(names[i])
+      if (gl) {
+        return names[i];
+      }
     } catch (err) {
-      gl = null
+      console.error(err)
+      return 'cpu';
     }
   }
-
-  if (!gl) {
-    webgl.version = 'cpu'
-    return webgl
-  } else {
-    let webgl2canvas = document.createElement('canvas')
-    gl = webgl2canvas.getContext('webgl2')
-    webgl.version = (typeof WebGL2RenderingContext !== 'undefined'
-      && gl instanceof WebGL2RenderingContext) ? 'webgl2' : webgl.version
-  }
-
-  return webgl.version
 }

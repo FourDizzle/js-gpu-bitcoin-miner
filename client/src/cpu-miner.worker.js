@@ -1,4 +1,4 @@
-import { convertToByteArray } from './hexutil'
+import { convertToByteArray, reverseAllBytes } from './hexutil'
 import { sha256 } from 'js-sha256'
 
 import { requestIteration, cancelIteration } from './request-iteration'
@@ -39,6 +39,11 @@ function isLessThanTarget(hash) {
   return isWinner;
 }
 
+function isHashLessThanTarget(hash) {
+  let result = parseInt(reverseAllBytes(hash), 16)
+  return (result <= target)
+}
+
 function nonceToByteArray(nonce) {
   let arr = [
     (nonce >>> 24) & 0xFF,
@@ -60,9 +65,13 @@ function mine() {
     hash = sha256.update(block)
     hash = sha256.update(hash.digest())
 
-    if (isLessThanTarget(hash.digest(), work.target)) {
+    if (isHashLessThanTarget(hash.hex())) {
+      console.log('submit hash:', hash.hex())
+      console.log('target:', target.toString(16))
       submitWork(work, nonce)
-    } else if (nonce >= 0xFFFFFFFF) {
+    }
+
+    if (nonce >= 0xFFFFFFFF) {
       batchDiff = batchSize - i + 1
       finished = true
       break;
@@ -124,7 +133,7 @@ onmessage = function(e) {
       if (!work || newWork.id !== work.id) {
         work = newWork
         headerIntArr = convertToByteArray(work.data.substring(0, 152))
-        target = convertToByteArray(work.target)
+        target = parseInt(reverseAllBytes(work.target), 16)
         nonce = work.nonceStart || 0
       }
       mineIteration = requestIteration(mine)

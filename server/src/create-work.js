@@ -37,7 +37,7 @@ function generateExtranonce2(size) {
     bitMaskStr += 'ff'
   }
   let bitMask =  parseInt(bitMaskStr, 16)
-  let extranonce2 = (Math.random() * bitMask) & bitMask
+  let extranonce2 = Math.random() * bitMask
 
   return hexutil.numToNByteHex(extranonce2, size)
 }
@@ -57,7 +57,7 @@ function createWork(job, session, options) {
   work.id = job.id
   work.extranonce2 = extranonce2
   work.nTime = job.ntime
-  work.target = session.shareTarget
+  work.target = hexutil.reverseAllBytes(session.shareTarget)
   work.data = blockHeader
   work.midstate = midstate
   work.hash1 = HASH1

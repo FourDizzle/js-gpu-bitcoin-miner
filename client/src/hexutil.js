@@ -39,7 +39,7 @@ export const byteToHex = function(byte) {
 }
 
 export const reverseAllBytes = function(hex) {
-  rev = ''
+  let rev = ''
   for (let i = 0; i < hex.length; i += 2) {
     rev += hex.substring(hex.length - 2 - i, hex.length - i)
   }
@@ -68,8 +68,11 @@ export const hexToUint16Array = function(hex) {
 }
 
 export const nonceToUint16Array = function(nonce) {
-  var arr = new Uint16Array(2);
-  arr[0] = ((nonce & 0xFFFF0000) >>> 16)
-  arr[1] = ((nonce & 0x0000FFFF))
+  // var arr = new Uint16Array(2);
+  // arr[0] = ((nonce & 0xFFFF0000) >>> 16)
+  // arr[1] = ((nonce & 0x0000FFFF))
+  var arr = [];
+  arr.push((nonce & 0xFFFF0000) >>> 16)
+  arr.push((nonce & 0x0000FFFF))
   return arr;
 }

@@ -67,7 +67,7 @@ function numToNByteHex(num, numBytes) {
     mask += 'ff'
   }
   let bitmask = parseInt(mask, 16)
-  let out = (num & bitmask).toString(16)
+  let out = ((num & bitmask) >>> 0).toString(16)
   out = zeros.substring(0, Math.max(0, numBytes * 2 - out.length)) + out
   return out
 }
