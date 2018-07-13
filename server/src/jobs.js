@@ -1,3 +1,7 @@
+const events = require('events')
+
+const eventEmitter = new events.EventEmitter()
+
 let jobList = []
 
 function newJob(job) {
@@ -52,6 +56,7 @@ function getJobById(id) {
 
 function cleanJobs() {
   jobList = []
+  eventEmitter.emit('clearJobs')
 }
 
 function updateJobs(msg) {
@@ -66,4 +71,7 @@ module.exports = {
   getJobs: getJobs,
   getJobById: getJobById,
   cleanJobs: cleanJobs,
+  onClearJobs: function(callback) {
+    eventEmitter.on('clearJobs', callback)
+  }
 }

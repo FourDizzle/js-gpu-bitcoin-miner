@@ -1,3 +1,4 @@
+const path = require("path")
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
@@ -9,6 +10,8 @@ const createStratumClient = require('./stratum-client')
 const jobs = require('./jobs');
 const createWork = require('./create-work');
 
+let DIST_DIR = process.env.CLIENT || path.join(__dirname, "/../../client/dist")
+
 let port = process.env.PORT || 5000;
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
@@ -17,8 +20,12 @@ let stratumSession = createStratumClient('stratum.slushpool.com', 3333)
 
 let routes = require('./routes')(stratumSession, jobs)
 
+app.use(express.static(DIST_DIR))
 app.use(routes)
-// websocket.setup(io)
+
+websocket.setup(io)
+
+jobs.onClearJobs(websocket.notifyClearJobs)
 
 server.listen(port)
 

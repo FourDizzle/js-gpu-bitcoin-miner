@@ -2,6 +2,8 @@ import detectWebGL from './detect-webgl'
 import * as services from './services'
 import makeMiner from './miner-factory'
 
+import websocket from './websocket'
+
 let miner = {}
 const webgl = detectWebGL()
 
