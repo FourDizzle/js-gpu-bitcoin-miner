@@ -11,6 +11,8 @@ export default (url) => {
   requestProgressQ = [],
   updateJobQueue = []
 
+  service.name = ''
+
   service.start = () => {
     console.log('start client')
     io = ioClient(url)
@@ -18,6 +20,16 @@ export default (url) => {
     io.on('clear.jobs', (work) => {
       console.log('Clear Jobs!', work)
       updateJobQueue.map(fn => fn(work))
+    })
+
+    io.on('name', name => {
+      console.log('Recived name:', name)
+      service.name = name
+    })
+
+    io.on('progress.request', () => {
+      console.log('Progress requested')
+      requestProgressQ.map(fn => fn())
     })
   }
 
@@ -31,11 +43,12 @@ export default (url) => {
   }
 
   service.submitWork = (work, nonce, callback) => {
-    body = {
+    let body = {
+      name: service.name,
       work,
       nonce,
     }
-    options = {
+    let options = {
       headers: {
         'content-type': 'application/json; charset=UTF-8',
       },
@@ -43,7 +56,7 @@ export default (url) => {
       body: body,
     }
 
-    fetch(BASE_URL + '/submit', options)
+    fetch(service.url + '/submit', options)
       .then(res => res.json())
       .then((data) => {
         if (typeof callback === 'function') callback(data.result)
@@ -52,7 +65,25 @@ export default (url) => {
   }
 
   service.reportProgress = (progress, callback) => {
+    console.log('Sending Progress to server.', progress)
+    let body = {
+      name: service.name,
+      progress,
+    }
+    let options = {
+      headers: {
+        'content-type': 'application/json; charset=UTF-8',
+      },
+      method: 'POST',
+      body: JSON.stringify(body),
+    }
 
+    fetch(service.url + '/report-progress', options)
+      .then(res => res.json())
+      .then((data) => {
+        if (typeof callback === 'function') callback(data.result)
+        return data
+      })
   }
 
   service.onUpdateJob = (callback) => {

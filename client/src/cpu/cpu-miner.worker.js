@@ -5,7 +5,7 @@ import bitcoinHashWithMidstate from './bitcoin-hash-mid-no-convert'
 const SHIFT = [0, 8, 16, 24]
 const NONCE_INDEX = 19
 
-let debug = true
+let debug = false
 
 let startTime
 let batchSize = 500000
