@@ -1,48 +1,71 @@
-const BASE_URL = 'http://localhost:5000'
+import ioClient from 'socket.io-client'
+const DEFAULT_URL = 'http://localhost:5000'
 
-const DEFAULT_CALLBACK = (data) => console.log(data)
+export default (url) => {
+  url = url || DEFAULT_URL
+  let service = {
+    url: url,
+  }
 
-export const submitWork = function(work, nonce, callback) {
-  // minername = 'FourDizzle.worker1'
-  // body = {
-  //   minername,
-  //   work,
-  //   nonce,
-  // }
-  // options = {
-  //   headers: {
-  //     'content-type': 'application/json; charset=UTF-8',
-  //   },
-  //   method: 'POST',
-  //   body: body,
-  // }
-  //
-  // if (typeof callback !== 'function') callback = DEFAULT_CALLBACK
-  //
-  // fetch(BASE_URL + '/submit', options)
-  //   .then(res => res.json())
-  //   .then((data) => {
-  //     console.log('data', data)
-  //   })
-}
+  let io,
+  requestProgressQ = [],
+  updateJobQueue = []
 
-export const getWork = function(callback) {
-  fetch(BASE_URL + '/work')
-    .then(res => res.json())
-    .then(data => {
-      if (typeof callback === 'function') callback(data.result)
-      return data
+  service.start = () => {
+    console.log('start client')
+    io = ioClient(url)
+
+    io.on('clear.jobs', (work) => {
+      console.log('Clear Jobs!', work)
+      updateJobQueue.map(fn => fn(work))
     })
-}
+  }
 
-export const reportProgress = function(progress, callback) {
+  service.getWork  = (callback) => {
+    fetch(url + '/work')
+      .then(res => res.json())
+      .then(data => {
+        if (typeof callback === 'function') callback(data.result)
+        return data
+      })
+  }
 
-}
+  service.submitWork = (work, nonce, callback) => {
+    body = {
+      work,
+      nonce,
+    }
+    options = {
+      headers: {
+        'content-type': 'application/json; charset=UTF-8',
+      },
+      method: 'POST',
+      body: body,
+    }
 
-export const onUpdateJob = function(callback) {
+    fetch(BASE_URL + '/submit', options)
+      .then(res => res.json())
+      .then((data) => {
+        if (typeof callback === 'function') callback(data.result)
+        return data
+      })
+  }
 
-}
+  service.reportProgress = (progress, callback) => {
 
-export const onRequestProgress = function(callback) {
+  }
 
+  service.onUpdateJob = (callback) => {
+    if (typeof callback === 'function') updateJobQueue.push(callback)
+  }
+
+  service.onRequestProgress = (callback) => {
+    if (typeof callback === 'function') requestProgressQ.push(callback)
+  }
+
+  service.stop = () => {
+    io.close()
+  }
+
+  return service;
 }

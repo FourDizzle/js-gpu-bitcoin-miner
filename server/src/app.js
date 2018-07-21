@@ -16,6 +16,8 @@ let port = process.env.PORT || 5000;
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
+console.log('Started on port', port)
+
 let stratumSession = createStratumClient('stratum.slushpool.com', 3333)
 
 let routes = require('./routes')(stratumSession, jobs)
@@ -25,7 +27,9 @@ app.use(routes)
 
 websocket.setup(io)
 
-jobs.onClearJobs(websocket.notifyClearJobs)
+jobs.onClearJobs((job) => {
+  websocket.notifyClearJobs(job, stratumSession)
+})
 
 server.listen(port)
 

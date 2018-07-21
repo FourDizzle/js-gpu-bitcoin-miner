@@ -42,6 +42,17 @@ function generateExtranonce2(size) {
   let bitMask =  parseInt(bitMaskStr, 16)
   let extranonce2 = Math.random() * bitMask
 
+  return extranonce2;
+}
+
+function pickExtranonce2(size, options, job) {
+  size = size || 4
+
+  let extranonce2 = 0
+  if (options && options.extranonce2) extranonce2 = options.extranonce2;
+  else if (job && job.extranonce2 >= 0) extranonce2 = ++job.extranonce2;
+  else extranonce2 = generateExtranonce2(size);
+
   return hexutil.numToNByteHex(extranonce2, size)
 }
 
@@ -49,7 +60,7 @@ function createWork(job, session, options) {
   let work = {}
   options = options || {}
 
-  let extranonce2 = options.extranonce2 || generateExtranonce2(session.extranonce2Size)
+  let extranonce2 = pickExtranonce2(session.extranonce2Size, options, job)
   let coinbase = calculateCoinbase(job, extranonce2, session)
   let merkleRoot = calculateMerkleRoot(job.merkleBranch, coinbase)
 

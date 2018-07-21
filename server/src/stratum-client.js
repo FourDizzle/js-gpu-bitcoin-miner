@@ -63,10 +63,10 @@ function handleResp(data) {
   messages.map((msg, i) => {
     let parsed = parseMsg(msg)
     if (parsed) {
-      // console.log('Received:', msg)
+      console.log('Received:', msg)
       handleMsg.call(this, parsed)
     } else if (i === 0 && (parsed = parseMsg(firstMessage))) {
-      // console.log('Received:', firstMessage)
+      console.log('Received:', firstMessage)
       handleMsg.call(this, parsed)
     } else {
       //error parsing
@@ -91,7 +91,7 @@ function sendMessage(method, params, callback) {
 
   var msgTxt = JSON.stringify(message) + '\n'
   this.eventEmitter.emit('socket.sendingMessage', message)
-  // console.log('Sending:', msgTxt)
+  console.log('Sending:', msgTxt)
   this.socket.write(msgTxt)
 }
 

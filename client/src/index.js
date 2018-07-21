@@ -5,24 +5,49 @@
 // import websocket from './websocket'
 
 import makeMiner from './cpu/cpu-miner'
+import makeService from './services'
 
-let miner = makeMiner()
-miner.setup()
+// let miner = makeMiner()
+// miner.setup()
+//
+// miner.updateWork(testWork)
 
-let testWork = {
-  id:'00000001',
-  extranonce2: '00000001',
-  nTime: '53058b35',
-  target: '00000000000000015f5300000000000000000000000000000000000000000000',
-  data: '00000002975b9717f7d18ec1f2ad55e2559b5997b8da0e3317c8037800000001000000005a29978af1b447278d94b3a0440399f3a69fe1c03a2bb9b2bae6c819871714dc53058b3519015f5300000000000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000',
-  midstate: 'dc6a3b8d0c69421acb1a5434e536f7d5c3c1b9e44cbb9b8f95f0172efc48d2df',
-  hash1: '00000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000100',
-  nonceStart: 854000000,
-  nonceEnd: 0xffffffff,
+let makeWorker = (options) => {
+  options = options || {}
+  options.url = options.url || window.location.origin
+  options.minerType = 'cpu'
+
+  let service = makeService(options.url)
+  let miner = makeMiner()
+  miner.setup(options)
+
+  let worker = {
+    miner: miner,
+    connection: service,
+  }
+
+  miner.onSubmit(service.submitWork)
+  service.onRequestProgress(miner.getProgress)
+  miner.onProgressReport(service.reportProgress)
+  service.onUpdateJob(miner.updateWork)
+
+  worker.start = () => {
+    service.start()
+    service.getWork(miner.start)
+  }
+
+  worker.stop = () => {
+    service.stop()
+    miner.stop()
+  }
+
+  return worker;
 }
 
-miner.updateWork(testWork)
+export default makeWorker
 
+let worker = makeWorker()
+worker.start()
 // let miner = {}
 // const webgl = detectWebGL()
 
@@ -53,5 +78,5 @@ miner.updateWork(testWork)
 //   miner.start(work)
 // })
 
-window.startMiner = miner.start.bind(miner)
-window.stopMiner = miner.stop.bind(miner)
+window.startMiner = worker.start
+window.stopMiner = worker.stop

@@ -14,7 +14,8 @@ function newJob(job) {
     version: job[5],
     nbits: job[6],
     ntime: job[7],
-    cleanJobs: job[8]
+    cleanJobs: job[8],
+    extranonce2: 0
   };
 }
 
@@ -37,10 +38,11 @@ function addJob(job) {
     parsedJob = newJob(job)
   } else if (isJob(job)) {
     parsedJob = job
+    parsedJob.extranonce2 = 0
   }
 
   if (parsedJob.cleanJobs) {
-    cleanJobs()
+    cleanJobs(parsedJob)
   }
 
   jobList.push(parsedJob)
@@ -54,9 +56,9 @@ function getJobById(id) {
   return jobList.filter(job => (job.id === id))
 }
 
-function cleanJobs() {
+function cleanJobs(job) {
   jobList = []
-  eventEmitter.emit('clearJobs')
+  eventEmitter.emit('clearJobs', job)
 }
 
 function updateJobs(msg) {

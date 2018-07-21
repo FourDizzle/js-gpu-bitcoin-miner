@@ -3,7 +3,7 @@ import Worker from './cpu-miner.worker.js'
 
 const addToQueue = (queue, callback) => {
   if (typeof callback === 'function') {
-    queue.add(callback)
+    queue.push(callback)
   }
 }
 
@@ -11,6 +11,7 @@ export default (events) => {
   events = events || new Emitter()
   let miner = { eventEmitter: events }
   let worker
+  let progressCallbacks = []
   let progressQueue = []
   let submitQueue = []
   let finishedQueue = []
@@ -23,6 +24,7 @@ export default (events) => {
   let reportProgress = (report) => {
     events.emit('report-progress', report)
     progressQueue.map(fn => fn(report))
+    progressCallbacks.map(fn => fn(report))
     progressQueue = []
   }
 
@@ -66,6 +68,10 @@ export default (events) => {
   miner.getProgress = (callback) => {
     addToQueue(progressQueue, callback)
     worker.postMessage({action: 'request-progress'})
+  }
+
+  miner.onProgressReport = (callback) => {
+    addToQueue(progressCallbacks, callback)
   }
 
   miner.onSubmit = (callback) => {
