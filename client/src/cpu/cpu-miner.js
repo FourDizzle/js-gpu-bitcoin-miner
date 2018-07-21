@@ -22,7 +22,7 @@ export default (events) => {
   }
 
   let reportProgress = (report) => {
-    console.log('Miner Progress:', progress)
+    console.log('Miner Progress:', report)
     events.emit('report-progress', report)
     progressQueue.map(fn => fn(report))
     progressCallbacks.map(fn => fn(report))

@@ -29,7 +29,6 @@ app.use(routes)
 websocket.setup(io, clientList)
 
 jobs.onClearJobs((job) => {
-  // websocket.notifyClearJobs(job, stratumSession)
   clientList.clients.map(client => {
     if (client.connected) {
       client.updateWork(createWork(job, stratumSession))

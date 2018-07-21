@@ -1,5 +1,6 @@
 import makeMiner from './cpu/cpu-miner'
 import makeService from './services'
+import { executeInOneTabOnly, releaseClaim } from './tab-coordinator'
 
 let makeWorker = (options) => {
   options = options || {}
@@ -20,12 +21,18 @@ let makeWorker = (options) => {
   miner.onProgressReport(service.reportProgress)
   service.onUpdateJob(miner.updateWork)
 
-  worker.start = () => {
+  worker.start = executeInOneTabOnly.bind(null, () => {
     service.start()
     service.getWork(miner.start)
-  }
+  })
+
+  // worker.start = () => {
+  //   service.start()
+  //   service.getWork(miner.start)
+  // }
 
   worker.stop = () => {
+    releaseClaim()
     service.stop()
     miner.stop()
   }
