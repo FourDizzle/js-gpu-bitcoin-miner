@@ -1,6 +1,9 @@
 # Build results
 dist
 
+#notes
+todo-list.txt
+
 # OS X
 .DS_Store
 

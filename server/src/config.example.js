@@ -7,6 +7,8 @@
 const path = require("path")
 const env = process.env.NODE_ENV
 
+env = (env === 'dev' || env === 'prod') ? env : 'dev'
+
 const dev = {
   express: {
     port: 5000,
@@ -16,7 +18,7 @@ const dev = {
     url: 'theinternet.com',
     port: 3333,
     username: 'blahblah',
-    miners: [
+    workers: [
       {
         name: 'blahblah.worker1',
         password: 'password',
@@ -34,7 +36,7 @@ const prod = {
     url: 'theinternet.com',
     port: 3333,
     username: 'blahblah',
-    miners: [
+    workers: [
       {
         name: 'blahblah.worker1',
         password: 'password',
