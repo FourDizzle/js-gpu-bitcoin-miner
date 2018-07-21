@@ -42,7 +42,9 @@ stratumSession.onNotify(function(id, prevhash) {
 })
 
 stratumSession.connect(() => {
-  stratumSession.subscribe('FourDizzle')
+  stratumSession.subscribe('FourDizzle', () => {
+    stratumSession.authorize('FourDizzle.worker1', 'password')
+  })
   // stratumSession.authorize('FourDizzle.worker1', 'password',
   //   (error, result) => {
   //     if (!error) {

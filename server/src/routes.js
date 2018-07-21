@@ -24,19 +24,21 @@ module.exports = function(stratumSession, jobs) {
       body.nonce,
     ]
 
-    stratumSession.submit.apply(
-      stratumSession, submission, (error, result) => {
-        if (error) {
-          res.send(error)
-          return;
-        } else {
-          res.send({
-            message: 'successfully submitted work for job ' + proof.id
-          })
-          return;
-        }
+    let callback = (error, result) => {
+      if (error) {
+        res.send(error)
+        return;
+      } else {
+        res.send({
+          message: 'successfully submitted work for job ' + proof.id
+        })
+        return;
       }
-    )
+    }
+
+    submission.push(callback)
+
+    stratumSession.submit.apply(stratumSession, submission)
   })
 
   router.post('/report', (req, res) => {
