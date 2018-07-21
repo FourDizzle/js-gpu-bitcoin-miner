@@ -1,8 +1,8 @@
 const Emitter = require('tiny-emitter')
-import setupWebgl from './webgl/setup-webgl-1'
-import shaders from './webgl/webgl-shaders'
-import { requestIteration, cancelIteration } from './request-iteration'
-import { reverseAllBytes } from './hexutil'
+import setupWebgl from './setup-webgl-1'
+import shaders from './webgl-shaders'
+import { requestIteration, cancelIteration } from '../request-iteration'
+import { reverseAllBytes } from '../hexutil'
 
 function calcTargetColor(target) {
   let val = 0
