@@ -6,6 +6,7 @@ const server = require('http').createServer(app)
 const io = require('socket.io')(server)
 const websocket = require('./websocket')
 
+const clientList = require('./clients')
 const createStratumClient = require('./stratum-client')
 const jobs = require('./jobs');
 const createWork = require('./create-work');
@@ -20,15 +21,20 @@ console.log('Started on port', port)
 
 let stratumSession = createStratumClient('stratum.slushpool.com', 3333)
 
-let routes = require('./routes')(stratumSession, jobs)
+let routes = require('./routes')(stratumSession, jobs, clientList)
 
 app.use(express.static(DIST_DIR))
 app.use(routes)
 
-websocket.setup(io)
+websocket.setup(io, clientList)
 
 jobs.onClearJobs((job) => {
-  websocket.notifyClearJobs(job, stratumSession)
+  // websocket.notifyClearJobs(job, stratumSession)
+  clientList.clients.map(client => {
+    if (client.connected) {
+      client.updateWork(createWork(job, stratumSession))
+    }
+  })
 })
 
 server.listen(port)
@@ -36,22 +42,10 @@ server.listen(port)
 stratumSession.onNotify(function(id, prevhash) {
   args = [].slice.call(arguments)
   jobs.addJob(args)
-  if (arguments.length === 9 && arguments[8] === true) {
-    // websocket.notifyClearJobs()
-  }
 })
 
 stratumSession.connect(() => {
   stratumSession.subscribe('FourDizzle', () => {
     stratumSession.authorize('FourDizzle.worker1', 'password')
   })
-  // stratumSession.authorize('FourDizzle.worker1', 'password',
-  //   (error, result) => {
-  //     if (!error) {
-  //       console.log(result)
-  //     } else {
-  //       console.log('error:', error)
-  //     }
-  //   }
-  // )
 })
