@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build.client": "cd ../client && npm run dev && cd ../server",
+    "dev": "set NODE_ENV='dev' && node ./src/app.js",
     "start": "set PORT=5000 && node ./src/app.js"
   },
   "author": "",

@@ -1,4 +1,4 @@
-const path = require("path")
+const config = require("./config")
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
@@ -11,15 +11,15 @@ const createStratumClient = require('./stratum-client')
 const jobs = require('./jobs');
 const createWork = require('./create-work');
 
-let DIST_DIR = process.env.CLIENT || path.join(__dirname, "/../../client/dist")
+let DIST_DIR = config.express.static
 
-let port = process.env.PORT || 5000;
+let port = config.express.port || 5000;
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 console.log('Started on port', port)
 
-let stratumSession = createStratumClient('stratum.slushpool.com', 3333)
+let stratumSession = createStratumClient(config.stratum.url, config.stratum.port)
 
 let routes = require('./routes')(stratumSession, jobs, clientList)
 
@@ -44,7 +44,9 @@ stratumSession.onNotify(function(id, prevhash) {
 })
 
 stratumSession.connect(() => {
-  stratumSession.subscribe('FourDizzle', () => {
-    stratumSession.authorize('FourDizzle.worker1', 'password')
+  stratumSession.subscribe(config.stratum.username, () => {
+    config.stratum.workers.map(worker => {
+      stratumSession.authorize(worker.name, worker.password)
+    })
   })
 })
