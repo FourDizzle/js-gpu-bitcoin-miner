@@ -39,6 +39,10 @@ export const reportProgress = function(progress, callback) {
 
 }
 
-export const onClearJobs = function(callback) {
+export const onUpdateJob = function(callback) {
+
+}
+
+export const onRequestProgress = function(callback) {
 
 }

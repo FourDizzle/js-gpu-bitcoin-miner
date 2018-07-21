@@ -49,8 +49,8 @@ function handleMsg(msg) {
 }
 
 function handleResp(data) {
-  // console.log(data)
   let datatext = new String(data);
+
   let messages = datatext.split('\n');
   let firstMessage = messages[0];
   if (this.respBuf.length) {
@@ -63,8 +63,10 @@ function handleResp(data) {
   messages.map((msg, i) => {
     let parsed = parseMsg(msg)
     if (parsed) {
+      // console.log('Received:', msg)
       handleMsg.call(this, parsed)
     } else if (i === 0 && (parsed = parseMsg(firstMessage))) {
+      // console.log('Received:', firstMessage)
       handleMsg.call(this, parsed)
     } else {
       //error parsing

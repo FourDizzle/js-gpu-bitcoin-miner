@@ -35,9 +35,8 @@ function targetColorToNumber(targetColor) {
 const processProto = {
   mine: function() {
     let startNonce = this.glMiner.nonce
-    console.log('start', startNonce)
     this.glMiner.mine()
-    console.log('after', startNonce)
+    console.log(startNonce)
 
     for (let i = 0; i < this.buf.length; i+=4) {
       let pixel = 0
@@ -52,16 +51,16 @@ const processProto = {
       }
     }
 
-    this.iterationId = requestAnimationFrame(this.mine.bind(this))
+    this.iterationId = requestIteration(this.mine.bind(this))
   },
 
   updateWork: function(work) {
-    cancelAnimationFrame(this.iterationId)
+    cancelIteration(this.iterationId)
     this.work = work
     this.glMiner.addWork(work)
     this.targetColor = calcTargetColor(reverseAllBytes(work.target))
     this.targetColorValue = parseInt('007fff800', 16)
-    this.iterationId = requestAnimationFrame(this.mine.bind(this))
+    this.iterationId = requestIteration(this.mine.bind(this))
   },
 
   submitWork: function(work, nonce) {
@@ -87,7 +86,7 @@ export default function(events) {
     process.events.on('new-work', process.updateWork.bind(process))
     process.events.on('work', process.updateWork.bind(process))
     process.events.on('stop', () => {
-      cancelAnimationFrame(process.iterationId)
+      cancelIteration(process.iterationId)
     })
   }
 

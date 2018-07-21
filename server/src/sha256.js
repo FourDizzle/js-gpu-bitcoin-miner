@@ -52,7 +52,12 @@ function toUint32Array(hex) {
 }
 
 function rrot(num, rot) {
-  return (num >>> rot) | (num << 32-rot)
+  rot &= 0x1F
+  return (num >>> rot) | ((num << (32-rot)) & 0xffffffff)
+}
+
+function safeAdd32(a, b) {
+
 }
 
 function chunkMessage(msgArr) {

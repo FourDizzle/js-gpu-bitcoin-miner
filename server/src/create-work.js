@@ -5,6 +5,9 @@ const HASH1 = '000000000000000000000000000000000000000000000000000000000000000'
   + '08000000000000000000000000000000000000000000000000000000000000100'
 const HEADER_PADDING = '800000000000000000000000000000000000000000000000000000'
   + '000000000000000000000000000000000000000280'
+const LITTLE_ENDIAN_PADDING =
+  '000000800000000000000000000000000000000000000000' +
+  '000000000000000000000000000000000000000080020000'
 
 function calculateCoinbase(job, extranonce2, session) {
   let coinbase = job.coinb1 + session.extranonce1 + extranonce2 + job.coinb2
@@ -49,21 +52,21 @@ function createWork(job, session, options) {
   let extranonce2 = options.extranonce2 || generateExtranonce2(session.extranonce2Size)
   let coinbase = calculateCoinbase(job, extranonce2, session)
   let merkleRoot = calculateMerkleRoot(job.merkleBranch, coinbase)
-  let blockHeader = job.version + job.prevhash + merkleRoot
-    + job.ntime + job.nbits + '00000000' + HEADER_PADDING
-  blockHeader = hexutil.convertToLittleEndian(blockHeader)
-  let midstate = hash.calcMidstate(blockHeader)
+
+  let data = job.version + job.prevhash + merkleRoot
+    + job.ntime + job.nbits + '00000000' + LITTLE_ENDIAN_PADDING
+  let littleEndianData = hexutil.convertToLittleEndian(data)
+  let midstate = hash.calcMidstate(littleEndianData)
 
   work.id = job.id
   work.extranonce2 = extranonce2
   work.nTime = job.ntime
-  work.target = hexutil.reverseAllBytes(session.shareTarget)
-  work.data = blockHeader
+  work.target = session.shareTarget
+  work.data = data
   work.midstate = midstate
   work.hash1 = HASH1
   work.nonceStart = 0
   work.nonceEnd = 0xffffffff
-  work.extranonce2 = extranonce2
 
   return work;
 }

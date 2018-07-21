@@ -28,7 +28,7 @@ function getWebglContext(canvas) {
   const names = ['webgl', 'experimental-webgl', 'moz-webgl', 'webkit-3d'];
   for (let i = 0; i < names.length; i++) {
     try {
-      gl = canvas.getContext(names[i]);
+      gl = canvas.getContext(names[i], { antialias: false, });
       if (gl) { break; }
     } catch (e) {
       console.error(e);

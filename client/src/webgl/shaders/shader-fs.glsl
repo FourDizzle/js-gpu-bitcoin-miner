@@ -266,10 +266,6 @@ void main ()
         for (int i=0; i<8; i++) {
             tmp[i] = H[i];
         }
-        // TODO: check if needed
-        /*for (int i = 0; i < 64; i++) {
-            w[i] = vec2(0., 0.);
-        }*/
 
 
         // update(midstate, udata)
@@ -331,10 +327,6 @@ void main ()
         for (int i=0; i<8; i++) {
             tmp[i] = H[i];
         }
-        // TODO: check if needed
-        /* for (int i = 0; i < 64; i++) {
-            w[i] = vec2(0., 0.);
-        } */
 
     // update(hash)
         // extend work (w, hash)
@@ -369,61 +361,19 @@ void main ()
           a = safe_add(_t1, _t2);
 				}
 
-        tmp[0] = safe_add(a, tmp[0]);
-        tmp[1] = safe_add(b, tmp[1]);
-        tmp[2] = safe_add(c, tmp[2]);
-        tmp[3] = safe_add(d, tmp[3]);
-        tmp[4] = safe_add(e, tmp[4]);
-        tmp[5] = safe_add(f, tmp[5]);
+        // tmp[0] = safe_add(a, tmp[0]);
+        // tmp[1] = safe_add(b, tmp[1]);
+        // tmp[2] = safe_add(c, tmp[2]);
+        // tmp[3] = safe_add(d, tmp[3]);
+        // tmp[4] = safe_add(e, tmp[4]);
+        // tmp[5] = safe_add(f, tmp[5]);
         tmp[6] = safe_add(g, tmp[6]);
         tmp[7] = safe_add(h, tmp[7]);
       }
-
-		bool is_submittable = true;
-
-		// vec2 hash_color;
-		// for (int i = 0; i < 8; i++) {
-		// 	if(target[i].x > 0.0 || target[i].y > 0.0) {
-		// 		hash_color = tmp[7-i];
-		// 		break;
-		// 	} else {
-		// 		if (tmp[7 - i].x == 0.0 && tmp[7 - i].y == 0.0) {
-		// 			is_submittable = true;
-		// 		} else {
-		// 			is_submittable = false;
-		// 		}
-		// 	}
-		// }
-
-		// if (is_submittable == true) {
-		// 	gl_FragColor = reverseRGBA(hash_color);
-		// } else {
-		// 	gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
-		// }
 
 		if (tmp[7].x == 0.0 && tmp[7].y == 0.0) {
 			gl_FragColor = reverseRGBA(tmp[6]);
 		} else {
 			gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
 		}
-		// gl_FragColor = reverseRGBA(hash_color);
-
-
-		// for (int i = 0; i < 8; i++) {
-		// 	if (is_bigger(tmp[8 - i -1], target[i])) {
-		// 		is_submittable = false;
-		// 		break;
-		// 	}
-		//
-		// 	if (is_bigger(target[i], tmp[8 - i -1])) {
-		// 		is_submittable = true;
-		// 		break;
-		// 	}
-		// }
-		//
-		// if (is_submittable) {
-		// 	gl_FragColor = vec4(0.0, 1.0, 0.0, 1.0);
-		// } else {
-		// 	gl_FragColor = toRGBA( tmp[7]);
-		// }
 }

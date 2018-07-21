@@ -1,25 +1,22 @@
 const sha256 = require('js-sha256').sha256
 
 const convertToLittleEndian = function(hex) {
-  let hexcopy = '';
   if (hex.substring(0, 2) === '0x') {
-    hexcopy = hex.substring(2);
-  } else {
-    hexcopy = hex;
+    hex = hex.substring(2);
   }
 
-  let paddingSize = hexcopy.length % 8;
-  let padding = ''
-  for (let i = 0; i < paddingSize; i++) {
-    padding += '0'
-  }
+  let paddingSize = hex.length % 8
+  if (paddingSize  !== 0)
+    paddingSize = 8 - paddingSize
 
-  hexcopy = padding + hexcopy
+  let padding = '00000000'
+
+  hex = padding.substring(0, paddingSize) + hex
 
   let littleEndianHex = '';
-  for (let i = 0; i < hexcopy.length; i += 8) {
+  for (let i = 0; i < hex.length; i += 8) {
     for (let j = 0; j <= 6; j += 2) {
-      littleEndianHex += hexcopy.substring(i + (6 - j), i + (8 - j))
+      littleEndianHex += hex.substring(i + (6 - j), i + (8 - j))
     }
   }
 

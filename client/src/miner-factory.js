@@ -1,7 +1,7 @@
 const Emitter = require('tiny-emitter')
 import detectWebGL from './detect-webgl'
 
-import makeCpuProcess from './cpu-process'
+import makeCpuProcess from './cpu/cpu-miner'
 import makeWebGlProcess from './webgl-process'
 
 const PROCESSES = {
@@ -14,25 +14,23 @@ const minerProto = {
   setup: function(options) {
     this.process.setup(options)
 
-    this.services.onClearJobs((work) => {
-      this.events.emit('clear-jobs', work)
+    this.services.onRequestProgress(() => {
+      this.getProgress(this.services.reportProgress)
     })
-
+    this.services.onUpdateJob(work => this.update(work))
     this.events.on('submit', (work, nonce) => {
       this.services.submitWork(work, nonce)
-    })
-    this.events.on('need-new-work', () => {
-      this.services.getWork(this.update)
     })
     this.events.on('report-progress', (progress) => {
       this.services.reportProgress(progress)
       console.log('progress report:', progress)
     })
-    this.events.on('clear-jobs', (work) => {
-      this.events.emit('update-work', work)
-    })
-    this.events.on('update-work', (work) => {
+    this.events.on('new-work', (work) => {
       this.update(work)
+    })
+    this.events.on('finished-work', (work) => {
+      console.log('finished work:', work)
+      this.services.getWork(work => this.update(work))
     })
   },
 
@@ -41,15 +39,21 @@ const minerProto = {
       update(work)
     } else {
       console.log('asking for work')
-      this.services.getWork((work) => this.update(work))
+      this.services.getWork(work => this.update(work))
     }
   },
 
   update: function(work) {
     console.log('updating work')
     this.currentWork = work
-    this.events.emit('work', work)
+    this.events.emit('new-work', work)
     console.log(work)
+  },
+
+  getProgress: function(callback) {
+    if (typeof callback === 'function')
+      this.events.once('report-progress', callback)
+    this.events.emit('request-progress')
   },
 
   stop: function() {
@@ -62,8 +66,10 @@ const minerProto = {
   },
 }
 
-export default function(services) {
-  let minerType = detectWebGL()
+export default function(services, options) {
+  // let minerType = options.minerType || detectWebGL()
+  // webgl implementation 10x slower than cpu. need to seriously optimize
+  let minerType = 'cpu'
   console.log('miner-type', minerType)
 
   let miner = {}

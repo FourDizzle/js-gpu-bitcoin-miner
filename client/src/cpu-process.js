@@ -29,9 +29,9 @@ export default function(events) {
     }
 
     process.events.on('new-work', updateWork)
-    process.events.on('work', updateWork)
     process.events.on('stop', () => worker.postMessage({action: 'stop'}))
     process.events.on('close', () => worker.terminate())
+    process.events.on('request-progress', () => worker.postMessage({action: 'request-progress'}))
   }
 
   return process;
