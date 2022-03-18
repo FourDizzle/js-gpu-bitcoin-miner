@@ -2,7 +2,7 @@
 Mines bitcoin in the browser using WebGL to compute the hashes and a server to negotiate the stratum mining protocol and coordinate clients.
 
 I've noticed the smallest amount of attention being paid to this code. Firstly, my appologies; this isn't my best stuff. Secondly, I figured
-I ought to some context with the code.
+I ought to put some context with this code.
 
 # On Security
 This is p old code, and some of the packages it depends on have been found to have some pretty serious security flaws, please address those
